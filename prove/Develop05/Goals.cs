@@ -17,6 +17,7 @@ public abstract class Goals
         _points = points;
     }
 
+    public abstract bool IsComplete();
     public abstract string DisplayName();
     public abstract int CalculatePoints();
 }
