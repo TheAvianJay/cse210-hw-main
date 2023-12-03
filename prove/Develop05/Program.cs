@@ -2,92 +2,75 @@ using System;
 
 class Program
 {
+
+    private static int GetResponse(string goalName)
+    {
+        Console.WriteLine($"How many times did you {goalName}?");
+        string response = Console.ReadLine();
+        int howManyTimes = int.Parse(response);
+        return howManyTimes;
+    }
+
+    private static void UpScoreIfNecessary(Goals goal, int howManyTimes, int bonusPoints)
+    {
+        int newTotal = goal.GetPoints() + bonusPoints;
+        if (goal.IsComplete())
+        {
+            goal.SetPoints(newTotal);
+            Console.WriteLine($"You managed to accomplish your goal this week on {goal.DisplayName()}. Your score per tick of your goal will now be {newTotal}.");
+        }
+        else
+        {
+            Console.WriteLine($"You did not accomplish your goal this week on {goal.DisplayName()}. Your score per tick of your goal will remain {goal.GetPoints()}.");
+        }
+    }
+
+    private static void DisplayGoalsWithPassingStatus(List<Goals> goals)
+    {
+        foreach (Goals goal in goals)
+        {
+            if (goal.IsComplete())
+            {
+                Console.WriteLine($"{goal.DisplayName()} pass");
+            }
+            else
+            {
+                Console.WriteLine(goal.DisplayName());
+            }
+        }
+    }
+
     static void Main(string[] args)
     {
-        Console.WriteLine("How many times did you repent? ");
-        string rep = Console.ReadLine();
-        int nr = int.Parse(rep);
-        int rp = 1000;
-        if (nr >= 7)
-        {
-            rp = 1200;
-            Console.WriteLine("You manage to acomplish your goal this week on repenting. Your score per tick of your goal will now be 1200. ");
-        }
-        Console.WriteLine("How far did you run this week? ");
-        string dis = Console.ReadLine();
-        int d = int.Parse(dis);
-        int dp = 200;
-        if (d >= 10)
-        {
-            dp = 300;
-            Console.WriteLine("You manage to acomplish your goal this week on running. Your score per tick of your goal will now be 300. ");
-        }
+        int repentanceFrequency = GetResponse("repent");
+        int runningMiles = GetResponse("run this week");
         
-        List<Goals> goals = new List<Goals>();
-        Repentance r = new Repentance(rp, nr);
-        goals.Add(r);
-        MorningRun mr = new MorningRun(dp, d);
-        goals.Add(mr);
+        Repentance repentance = new Repentance(repentanceFrequency);
+        MorningRun morningRun = new MorningRun(runningMiles);
 
-        //Console.WriteLine(mr.CalculatePoints());
+        UpScoreIfNecessary(repentance, repentanceFrequency, 200);
+        UpScoreIfNecessary(morningRun, runningMiles, 100);
 
-        foreach (Goals g in goals)
-        {
-            Console.WriteLine(g.DisplayName() + " " + g.CalculatePoints());
-        }
-        int total = r.CalculatePoints() + mr.CalculatePoints();
+        
+        List<Goals> goals = new List<Goals>() { repentance, morningRun };
+
+        int total = repentance.CalculatePoints() + morningRun.CalculatePoints();
+
         Console.WriteLine($"Your total score is {total}");
         Console.WriteLine("Is there a new goal you would like to set? Enter yes or no");
-        string responce = Console.ReadLine();
-        string yes = ("yes");
-        if (responce == yes)
+    
+        string response = Console.ReadLine();
+        if (response == "yes")
         {
             Console.WriteLine("Name the goal you would like to now set");
             string NewGoal = Console.ReadLine();
             Console.WriteLine("here are your goals and if they are completed");
-            if (nr >= 7)
-            {
-                
-                Console.WriteLine(r.DisplayName() + " pass");
-            }
-            else
-            {
-                Console.WriteLine(r.DisplayName());
-            }
-            if (d >= 7)
-            {
-                
-                Console.WriteLine(mr.DisplayName() + " pass");
-            }
-            else
-            {
-                Console.WriteLine(mr.DisplayName());
-            }
-            if (responce == yes)
-            {
-                Console.WriteLine($"{NewGoal}");
-            }
+            DisplayGoalsWithPassingStatus(goals);
+            Console.WriteLine($"{NewGoal}");
         }
         else
         {
-            if (nr >= 7)
-            {
-                
-                Console.WriteLine(r.CalculatePoints() + "pass");
-            }
-            else
-            {
-                Console.WriteLine(r.CalculatePoints());
-            }
-            if (d >= 7)
-            {
-                
-                Console.WriteLine(mr.CalculatePoints() + "pass");
-            }
-            else
-            {
-                Console.WriteLine(mr.CalculatePoints());
-            }
+            DisplayGoalsWithPassingStatus(goals);
         }
         
     }
